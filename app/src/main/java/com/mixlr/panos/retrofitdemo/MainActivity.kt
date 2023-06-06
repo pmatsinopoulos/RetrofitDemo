@@ -17,22 +17,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val retService = RetrofitInstance.getRetrofitInstance().create(AlbumService::class.java)
-        val responseLiveData: LiveData<Response<Albums>> = liveData {
-            val response = retService.getSortedAlbums(3)
+        val responseForOneAlbum : LiveData<Response<AlbumsItem>> = liveData {
+            val response = retService.getAlbumById(2)
             emit(response)
         }
-        responseLiveData.observe(this ) {
-            val albumsList = it.body()?.listIterator()
-            if (albumsList != null) {
-                while (albumsList.hasNext()) {
-                    val albumsItem = albumsList.next()
-                    val result = " " + "Album Title: ${albumsItem.title}" + "\n" +
-                                 " " + "Album id: ${albumsItem.id}" + "\n" +
-                                 " " + "User id: ${albumsItem.userId}" + "\n\n\n"
-                    Log.i("MYTAG", result)
-                    binding.textView.append(result)
-                }
-            }
+        responseForOneAlbum.observe(this) {
+            val result = it.body()?.title
+            binding.textView.text = result
         }
     }
 }
